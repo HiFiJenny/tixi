@@ -7,3 +7,4 @@ create table sys_doc (
   doc_status       char(1)         default '0'       comment '状态（0正常 1停用）',
   primary key (doc_id)
 ) engine=innodb auto_increment=1 comment = '文件信息表';
+
