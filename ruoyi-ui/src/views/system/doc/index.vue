@@ -9,34 +9,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker clearable
-          v-model="queryParams.createTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择创建时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="创建人" prop="createBy">
+      <el-form-item label="是否上架" prop="putWayFlag">
         <el-input
-          v-model="queryParams.createBy"
-          placeholder="请输入创建人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="更新时间" prop="updateTime">
-        <el-date-picker clearable
-          v-model="queryParams.updateTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择更新时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新人" prop="updateBy">
-        <el-input
-          v-model="queryParams.updateBy"
-          placeholder="请输入更新人"
+          v-model="queryParams.putWayFlag"
+          placeholder="请输入是否上架"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -97,6 +73,8 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="文件名字" align="center" prop="docName" />
+      <el-table-column label="是否上架" align="center" prop="putWayFlag" />
+      <el-table-column label="文件路径" align="center" prop="docPath" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -125,14 +103,37 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改班组安全生产责任书对话框 -->
+    <!-- 添加或修改MSDS对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="文件名字" prop="docName">
           <el-input v-model="form.docName" placeholder="请输入文件名字" />
         </el-form-item>
-        <el-form-item label="文件是否上架，0：下架，1：上架" prop="putWayFlag">
-          <el-input v-model="form.putWayFlag" placeholder="请输入文件是否上架，0：下架，1：上架" />
+        <el-form-item label="是否上架" prop="putWayFlag">
+          <el-input v-model="form.putWayFlag" placeholder="请输入是否上架" />
+        </el-form-item>
+        <el-form-item label="文件路径" prop="docPath">
+          <!-- <file-upload v-model="form.docPath"/> -->
+          <!--
+          limit:限制文件个数
+          accept:限制上传文件类型
+          action:访问后端路径
+          -->
+          <el-upload
+            ref="upload"
+            :limit="1"
+            accept=".doc, .docx"
+            :action="upload.url"
+            :headers="upload.headers"
+            :file-list="upload.fileList"
+            :on-progress="handleFileUploadProgress"
+            :on-success="handleFileSuccess"
+            :auto-upload="false">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <el-button style="margin-left: 10px;" size="small" type="success" :loading="upload.isUploading" @click="submitUpload">上传到服务器</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传doc/docx文件，且不超过10MB</div>
+          </el-upload>
+
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -145,11 +146,24 @@
 
 <script>
 import { listDoc, getDoc, delDoc, addDoc, updateDoc } from "@/api/system/doc";
-
+import { getToken } from "@/utils/auth";
 export default {
   name: "Doc",
   data() {
     return {
+      // 上传参数
+      upload: {
+        // 是否禁用上传
+        isUploading: false,
+        // 设置上传的请求头部
+        headers: { Authorization: "Bearer " + getToken() },
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + "/common/upload",
+        // 上传的文件列表
+        fileList: []
+      },
+
+
       // 遮罩层
       loading: true,
       // 选中数组
@@ -162,7 +176,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 班组安全生产责任书表格数据
+      // MSDS表格数据
       docList: [],
       // 弹出层标题
       title: "",
@@ -173,18 +187,13 @@ export default {
         pageNum: 1,
         pageSize: 10,
         docName: null,
-        createTime: null,
-        createBy: null,
-        updateTime: null,
-        updateBy: null
+        putWayFlag: null,
+        docPath: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        docName: [
-          { required: true, message: "文件名字不能为空", trigger: "blur" }
-        ],
       }
     };
   },
@@ -192,7 +201,23 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询班组安全生产责任书列表 */
+    // 文件提交处理
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.isUploading = false;
+      this.form.filePath = response.url;
+      this.msgSuccess(response.msg);
+    },
+
+
+    /** 查询MSDS列表 */
     getList() {
       this.loading = true;
       listDoc(this.queryParams).then(response => {
@@ -215,7 +240,8 @@ export default {
         createTime: null,
         createBy: null,
         updateTime: null,
-        updateBy: null
+        updateBy: null,
+        docPath: null
       };
       this.resetForm("form");
     },
@@ -239,7 +265,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加班组安全生产责任书";
+      this.title = "添加MSDS";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -248,7 +274,7 @@ export default {
       getDoc(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改班组安全生产责任书";
+        this.title = "修改MSDS";
       });
     },
     /** 提交按钮 */
@@ -274,7 +300,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除班组安全生产责任书编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除MSDS编号为"' + ids + '"的数据项？').then(function() {
         return delDoc(ids);
       }).then(() => {
         this.getList();

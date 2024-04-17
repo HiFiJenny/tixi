@@ -9,10 +9,10 @@ import com.ruoyi.system.domain.Doc;
 import com.ruoyi.system.service.IDocService;
 
 /**
- * 班组安全生产责任书Service业务层处理
+ * MSDSService业务层处理
  * 
  * @author ruoyi
- * @date 2024-04-11
+ * @date 2024-04-17
  */
 @Service
 public class DocServiceImpl implements IDocService 
@@ -21,10 +21,10 @@ public class DocServiceImpl implements IDocService
     private DocMapper docMapper;
 
     /**
-     * 查询班组安全生产责任书
+     * 查询MSDS
      * 
-     * @param id 班组安全生产责任书主键
-     * @return 班组安全生产责任书
+     * @param id MSDS主键
+     * @return MSDS
      */
     @Override
     public Doc selectDocById(Long id)
@@ -33,10 +33,10 @@ public class DocServiceImpl implements IDocService
     }
 
     /**
-     * 查询班组安全生产责任书列表
+     * 查询MSDS列表
      * 
-     * @param doc 班组安全生产责任书
-     * @return 班组安全生产责任书
+     * @param doc MSDS
+     * @return MSDS
      */
     @Override
     public List<Doc> selectDocList(Doc doc)
@@ -45,9 +45,9 @@ public class DocServiceImpl implements IDocService
     }
 
     /**
-     * 新增班组安全生产责任书
+     * 新增MSDS
      * 
-     * @param doc 班组安全生产责任书
+     * @param doc MSDS
      * @return 结果
      */
     @Override
@@ -58,9 +58,9 @@ public class DocServiceImpl implements IDocService
     }
 
     /**
-     * 修改班组安全生产责任书
+     * 修改MSDS
      * 
-     * @param doc 班组安全生产责任书
+     * @param doc MSDS
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class DocServiceImpl implements IDocService
     }
 
     /**
-     * 批量删除班组安全生产责任书
+     * 批量删除MSDS
      * 
-     * @param ids 需要删除的班组安全生产责任书主键
+     * @param ids 需要删除的MSDS主键
      * @return 结果
      */
     @Override
@@ -83,9 +83,9 @@ public class DocServiceImpl implements IDocService
     }
 
     /**
-     * 删除班组安全生产责任书信息
+     * 删除MSDS信息
      * 
-     * @param id 班组安全生产责任书主键
+     * @param id MSDS主键
      * @return 结果
      */
     @Override

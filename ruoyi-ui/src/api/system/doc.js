@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询班组安全生产责任书列表
+// 查询MSDS列表
 export function listDoc(query) {
   return request({
     url: '/system/doc/list',
@@ -9,7 +9,7 @@ export function listDoc(query) {
   })
 }
 
-// 查询班组安全生产责任书详细
+// 查询MSDS详细
 export function getDoc(id) {
   return request({
     url: '/system/doc/' + id,
@@ -17,7 +17,7 @@ export function getDoc(id) {
   })
 }
 
-// 新增班组安全生产责任书
+// 新增MSDS
 export function addDoc(data) {
   return request({
     url: '/system/doc',
@@ -26,7 +26,7 @@ export function addDoc(data) {
   })
 }
 
-// 修改班组安全生产责任书
+// 修改MSDS
 export function updateDoc(data) {
   return request({
     url: '/system/doc',
@@ -35,7 +35,7 @@ export function updateDoc(data) {
   })
 }
 
-// 删除班组安全生产责任书
+// 删除MSDS
 export function delDoc(id) {
   return request({
     url: '/system/doc/' + id,

@@ -6,10 +6,10 @@ import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
- * 班组安全生产责任书对象 doc
+ * MSDS对象 doc
  * 
  * @author ruoyi
- * @date 2024-04-11
+ * @date 2024-04-17
  */
 public class Doc extends BaseEntity
 {
@@ -22,8 +22,13 @@ public class Doc extends BaseEntity
     @Excel(name = "文件名字")
     private String docName;
 
-    /** 文件是否上架，0：下架，1：上架 */
+    /** 是否上架 */
+    @Excel(name = "是否上架")
     private Integer putWayFlag;
+
+    /** 文件路径 */
+    @Excel(name = "文件路径")
+    private String docPath;
 
     public void setId(Long id) 
     {
@@ -52,6 +57,15 @@ public class Doc extends BaseEntity
     {
         return putWayFlag;
     }
+    public void setDocPath(String docPath) 
+    {
+        this.docPath = docPath;
+    }
+
+    public String getDocPath() 
+    {
+        return docPath;
+    }
 
     @Override
     public String toString() {
@@ -63,6 +77,7 @@ public class Doc extends BaseEntity
             .append("createBy", getCreateBy())
             .append("updateTime", getUpdateTime())
             .append("updateBy", getUpdateBy())
+            .append("docPath", getDocPath())
             .toString();
     }
 }

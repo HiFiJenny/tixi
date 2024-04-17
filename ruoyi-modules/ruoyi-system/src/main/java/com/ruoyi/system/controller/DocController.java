@@ -23,10 +23,10 @@ import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
- * 班组安全生产责任书Controller
+ * MSDSController
  * 
  * @author ruoyi
- * @date 2024-04-11
+ * @date 2024-04-17
  */
 @RestController
 @RequestMapping("/doc")
@@ -36,7 +36,7 @@ public class DocController extends BaseController
     private IDocService docService;
 
     /**
-     * 查询班组安全生产责任书列表
+     * 查询MSDS列表
      */
     @RequiresPermissions("system:doc:list")
     @GetMapping("/list")
@@ -48,20 +48,20 @@ public class DocController extends BaseController
     }
 
     /**
-     * 导出班组安全生产责任书列表
+     * 导出MSDS列表
      */
     @RequiresPermissions("system:doc:export")
-    @Log(title = "班组安全生产责任书", businessType = BusinessType.EXPORT)
+    @Log(title = "MSDS", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Doc doc)
     {
         List<Doc> list = docService.selectDocList(doc);
         ExcelUtil<Doc> util = new ExcelUtil<Doc>(Doc.class);
-        util.exportExcel(response, list, "班组安全生产责任书数据");
+        util.exportExcel(response, list, "MSDS数据");
     }
 
     /**
-     * 获取班组安全生产责任书详细信息
+     * 获取MSDS详细信息
      */
     @RequiresPermissions("system:doc:query")
     @GetMapping(value = "/{id}")
@@ -71,10 +71,10 @@ public class DocController extends BaseController
     }
 
     /**
-     * 新增班组安全生产责任书
+     * 新增MSDS
      */
     @RequiresPermissions("system:doc:add")
-    @Log(title = "班组安全生产责任书", businessType = BusinessType.INSERT)
+    @Log(title = "MSDS", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Doc doc)
     {
@@ -82,10 +82,10 @@ public class DocController extends BaseController
     }
 
     /**
-     * 修改班组安全生产责任书
+     * 修改MSDS
      */
     @RequiresPermissions("system:doc:edit")
-    @Log(title = "班组安全生产责任书", businessType = BusinessType.UPDATE)
+    @Log(title = "MSDS", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Doc doc)
     {
@@ -93,14 +93,13 @@ public class DocController extends BaseController
     }
 
     /**
-     * 删除班组安全生产责任书
+     * 删除MSDS
      */
     @RequiresPermissions("system:doc:remove")
-    @Log(title = "班组安全生产责任书", businessType = BusinessType.DELETE)
+    @Log(title = "MSDS", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(docService.deleteDocByIds(ids));
     }
-
 }
