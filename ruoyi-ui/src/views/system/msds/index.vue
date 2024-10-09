@@ -1,18 +1,26 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="文件名字" prop="docName">
+      <el-form-item label="名称" prop="msdsName">
         <el-input
-          v-model="queryParams.docName"
-          placeholder="请输入文件名字"
+          v-model="queryParams.msdsName"
+          placeholder="请输入名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否上架" prop="putWayFlag">
+      <el-form-item label="创建人" prop="createBy">
         <el-input
-          v-model="queryParams.putWayFlag"
-          placeholder="请输入是否上架"
+          v-model="queryParams.createBy"
+          placeholder="请输入创建人"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="路径" prop="msdsPath">
+        <el-input
+          v-model="queryParams.msdsPath"
+          placeholder="请输入路径"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -31,7 +39,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:doc:add']"
+          v-hasPermi="['system:msds:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,7 +50,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:doc:edit']"
+          v-hasPermi="['system:msds:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +61,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:doc:remove']"
+          v-hasPermi="['system:msds:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,27 +71,19 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:doc:export']"
+          v-hasPermi="['system:msds:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="docList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="msdsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="文件名字" align="center" prop="docName" />
-      <el-table-column label="是否上架" align="center" prop="putWayFlag" />
-      <!-- <el-table-column label="文件路径" align="center" prop="docPath" /> -->
-      
-     
-
-      <el-table-column label="文件1路径" align="center" prop="docPath">
-      <template slot-scope="scope">
-        <a :href="scope.row.docPath" target="_blank" class="buttonText">{{scope.row.docPath}}</a>
-      </template>
-      </el-table-column>
-
+      <el-table-column label="编号" align="center" prop="msdsId" />
+      <el-table-column label="名称" align="center" prop="msdsName" />
+      <el-table-column label="创建人" align="center" prop="createBy" />
+      <el-table-column label="状态" align="center" prop="msdsStatus" />
+      <el-table-column label="路径" align="center" prop="msdsPath" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -91,21 +91,15 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:doc:edit']"
+            v-hasPermi="['system:msds:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:doc:remove']"
+            v-hasPermi="['system:msds:remove']"
           >删除</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleDownload(scope.row)"
-          >下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -118,24 +112,21 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改MSDS对话框 -->
+    <!-- 添加或修改MSDS信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="文件名字" prop="docName">
-          <el-input v-model="form.docName" placeholder="请输入文件名字" />
+        <el-form-item label="名称" prop="msdsName">
+          <el-input v-model="form.msdsName" placeholder="请输入名称" />
         </el-form-item>
-        <el-form-item label="是否上架" prop="putWayFlag">
-          <el-input v-model="form.putWayFlag" placeholder="请输入是否上架" />
-        </el-form-item>
-        
-        <el-form-item label="文件2路径" prop="docPath">
+        <el-form-item label="路径" prop="msdsPath">
+          <!-- <el-input v-model="form.msdsPath" placeholder="请输入路径" /> -->
           <el-upload
             ref="upload"
             :limit="1"
             accept=".doc, .docx"
             :action="upload.url"
             :headers="upload.headers"
-            :file-list="upload.docList"
+            :file-list="upload.fileList"
             :on-progress="handleFileUploadProgress"
             :on-success="handleFileSuccess"
             :auto-upload="false">
@@ -155,10 +146,10 @@
 </template>
 
 <script>
-import { listDoc, getDoc, delDoc, addDoc, updateDoc } from "@/api/system/doc";
+import { listMsds, getMsds, delMsds, addMsds, updateMsds } from "@/api/system/msds";
 import { getToken } from "@/utils/auth";
 export default {
-  name: "Doc",
+  name: "Msds",
   data() {
     return {
       // 上传参数
@@ -170,7 +161,7 @@ export default {
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/common/upload",
         // 上传的文件列表
-        docList: []
+        fileList: []
       },
 
 
@@ -186,8 +177,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // MSDS表格数据
-      docList: [],
+      // MSDS信息表格数据
+      msdsList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -196,9 +187,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        docName: null,
-        putWayFlag: null,
-        docPath: null
+        msdsName: null,
+        createBy: null,
+        msdsStatus: null,
+        msdsPath: null
       },
       // 表单参数
       form: {},
@@ -211,44 +203,29 @@ export default {
     this.getList();
   },
   methods: {
+
+
+
     // 文件提交处理
     submitUpload() {
       this.$refs.upload.submit();
-      
-      console.log('submit');  // 打印调试信息  
     },
     // 文件上传中处理
-    handleFileUploadProgress(event, file, docList) {
+    handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true;
-      
-      console.log('isUploading');  // 打印调试信息  
     },
     // 文件上传成功处理
-    handleFileSuccess(response, file, docList) {
+    handleFileSuccess(response, file, fileList) {
       this.upload.isUploading = false;
-      this.form.docPath = response.url;
-      
-      console.log('File uploaded, URL: ' + response.url);  // 打印调试信息  
+      this.form.filePath = response.url;
       this.msgSuccess(response.msg);
     },
-    // 文件下载处理        <a :href="scope.row.docPath" target="_blank" class="buttonText">{{scope.row.docPath}}</a>
 
-    handleDownload(row) {
-      console.log(row.docPath);  // 打印docPath的值  
-      var name = row.docName;
-      var url = row.docPath;
-      var suffix = url.substring(url.lastIndexOf("."), url.length);
-      const a = document.createElement('a')
-      a.setAttribute('download', name + suffix)
-      a.setAttribute('target', '_blank')
-      a.setAttribute('href', url)
-      a.click()
-    },
-    /** 查询MSDS列表 */
+    /** 查询MSDS信息列表 */
     getList() {
       this.loading = true;
-      listDoc(this.queryParams).then(response => {
-        this.docList = response.rows;
+      listMsds(this.queryParams).then(response => {
+        this.msdsList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -261,14 +238,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        id: null,
-        docName: null,
-        putWayFlag: null,
-        createTime: null,
+        msdsId: null,
+        msdsName: null,
         createBy: null,
-        updateTime: null,
-        updateBy: null,
-        docPath: null
+        msdsStatus: null,
+        msdsPath: null
       };
       this.resetForm("form");
     },
@@ -284,7 +258,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
+      this.ids = selection.map(item => item.msdsId)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -292,32 +266,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加MSDS";
-      this.upload.docList = [];
+      this.title = "添加MSDS信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getDoc(id).then(response => {
+      const msdsId = row.msdsId || this.ids
+      getMsds(msdsId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改MSDS";
+        this.title = "修改MSDS信息";
       });
-      this.upload.docList = [{ name: this.form.docName, url: this.form.docPath }];
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.id != null) {
-            updateDoc(this.form).then(response => {
+          if (this.form.msdsId != null) {
+            updateMsds(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addDoc(this.form).then(response => {
+            addMsds(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -328,9 +300,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除MSDS编号为"' + ids + '"的数据项？').then(function() {
-        return delDoc(ids);
+      const msdsIds = row.msdsId || this.ids;
+      this.$modal.confirm('是否确认删除MSDS信息编号为"' + msdsIds + '"的数据项？').then(function() {
+        return delMsds(msdsIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -338,9 +310,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/doc/export', {
+      this.download('system/msds/export', {
         ...this.queryParams
-      }, `doc_${new Date().getTime()}.xlsx`)
+      }, `msds_${new Date().getTime()}.xlsx`)
     }
   }
 };
