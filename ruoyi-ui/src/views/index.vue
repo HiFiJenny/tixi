@@ -62,15 +62,13 @@
           </div>
           <div class="body">
             <p>
-              
               <i class="el-icon-user-solid"></i> 账号：工号
             </p>
             <p>
-              
               <i class="el-icon-user-solid"></i> 初始密码：123456
             </p>  
             <span style="display: inline-block; height: 30px; line-height: 30px"
-              >首次使用请联系管理员67077开通账号</span
+              >新用户请联系管理员67077开通账号</span
             >
           </div>
         </el-card>
