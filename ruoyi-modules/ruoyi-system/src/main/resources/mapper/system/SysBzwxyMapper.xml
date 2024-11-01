@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysBzwxyMapper">
+    
+    <resultMap type="SysBzwxy" id="SysBzwxyResult">
+        <result property="bzwxyId"    column="bzwxy_id"    />
+        <result property="bzwxyName"    column="bzwxy_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="bzwxyStatus"    column="bzwxy_status"    />
+        <result property="bzwxyPath"    column="bzwxy_path"    />
+    </resultMap>
+
+    <sql id="selectSysBzwxyVo">
+        select bzwxy_id, bzwxy_name, create_by, bzwxy_status, bzwxy_path from sys_bzwxy
+    </sql>
+
+    <select id="selectSysBzwxyList" parameterType="SysBzwxy" resultMap="SysBzwxyResult">
+        <include refid="selectSysBzwxyVo"/>
+        <where>  
+            <if test="bzwxyName != null  and bzwxyName != ''"> and bzwxy_name like concat('%', #{bzwxyName}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="bzwxyStatus != null  and bzwxyStatus != ''"> and bzwxy_status = #{bzwxyStatus}</if>
+            <if test="bzwxyPath != null  and bzwxyPath != ''"> and bzwxy_path = #{bzwxyPath}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysBzwxyByBzwxyId" parameterType="Long" resultMap="SysBzwxyResult">
+        <include refid="selectSysBzwxyVo"/>
+        where bzwxy_id = #{bzwxyId}
+    </select>
+        
+    <insert id="insertSysBzwxy" parameterType="SysBzwxy" useGeneratedKeys="true" keyProperty="bzwxyId">
+        insert into sys_bzwxy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bzwxyName != null">bzwxy_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="bzwxyStatus != null">bzwxy_status,</if>
+            <if test="bzwxyPath != null">bzwxy_path,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bzwxyName != null">#{bzwxyName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="bzwxyStatus != null">#{bzwxyStatus},</if>
+            <if test="bzwxyPath != null">#{bzwxyPath},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysBzwxy" parameterType="SysBzwxy">
+        update sys_bzwxy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bzwxyName != null">bzwxy_name = #{bzwxyName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="bzwxyStatus != null">bzwxy_status = #{bzwxyStatus},</if>
+            <if test="bzwxyPath != null">bzwxy_path = #{bzwxyPath},</if>
+        </trim>
+        where bzwxy_id = #{bzwxyId}
+    </update>
+
+    <delete id="deleteSysBzwxyByBzwxyId" parameterType="Long">
+        delete from sys_bzwxy where bzwxy_id = #{bzwxyId}
+    </delete>
+
+    <delete id="deleteSysBzwxyByBzwxyIds" parameterType="String">
+        delete from sys_bzwxy where bzwxy_id in 
+        <foreach item="bzwxyId" collection="array" open="(" separator="," close=")">
+            #{bzwxyId}
+        </foreach>
+    </delete>
+</mapper>

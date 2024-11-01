@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="msdsName">
+      <el-form-item label="名称" prop="bzwxyName">
         <el-input
-          v-model="queryParams.msdsName"
+          v-model="queryParams.bzwxyName"
           placeholder="请输入名称"
           clearable
           @keyup.enter.native="handleQuery"
@@ -31,7 +31,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:msds:add']"
+          v-hasPermi="['system:bzwxy:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,7 +42,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:msds:edit']"
+          v-hasPermi="['system:bzwxy:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +53,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:msds:remove']"
+          v-hasPermi="['system:bzwxy:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,19 +63,19 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:msds:export']"
+          v-hasPermi="['system:bzwxy:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="msdsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="bzwxyList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="编号" align="center" prop="msdsId" />
-      <el-table-column label="名称" align="center" prop="msdsName" />
+      <el-table-column label="编号" align="center" prop="bzwxyId" />
+      <el-table-column label="名称" align="center" prop="bzwxyName" />
       <el-table-column label="创建人" align="center" prop="createBy" />
-      <el-table-column label="状态" align="center" prop="msdsStatus" />
-      <el-table-column label="路径" align="center" prop="msdsPath" />
+      <el-table-column label="状态" align="center" prop="bzwxyStatus" />
+      <el-table-column label="路径" align="center" prop="bzwxyPath" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -83,14 +83,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:msds:edit']"
+            v-hasPermi="['system:bzwxy:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:msds:remove']"
+            v-hasPermi="['system:bzwxy:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -104,13 +104,12 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改MSDS信息对话框 -->
+    <!-- 添加或修改班组危险源信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="名称" prop="msdsName">
-          <el-input v-model="form.msdsName" placeholder="请输入名称" />
+        <el-form-item label="名称" prop="bzwxyName">
+          <el-input v-model="form.bzwxyName" placeholder="请输入名称" />
         </el-form-item>
-
         
         
         <el-form-item label="创建人" prop="createBy">
@@ -121,11 +120,9 @@
           <el-input v-model="form.msdsStatus" placeholder="在用为1" />
         </el-form-item>
         
-
-        <el-form-item label="路径" prop="msdsPath">
-          <file-upload v-model="form.msdsPath"/>
+        <el-form-item label="路径" prop="bzwxyPath">
+          <file-upload v-model="form.bzwxyPath"/>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -136,10 +133,10 @@
 </template>
 
 <script>
-import { listMsds, getMsds, delMsds, addMsds, updateMsds } from "@/api/system/msds";
+import { listBzwxy, getBzwxy, delBzwxy, addBzwxy, updateBzwxy } from "@/api/system/bzwxy";
 
 export default {
-  name: "Msds",
+  name: "Bzwxy",
   data() {
     return {
       // 遮罩层
@@ -154,8 +151,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // MSDS信息表格数据
-      msdsList: [],
+      // 班组危险源信息表格数据
+      bzwxyList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -164,10 +161,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        msdsName: null,
+        bzwxyName: null,
         createBy: null,
-        msdsStatus: null,
-        msdsPath: null
+        bzwxyStatus: null,
+        bzwxyPath: null
       },
       // 表单参数
       form: {},
@@ -180,11 +177,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询MSDS信息列表 */
+    /** 查询班组危险源信息列表 */
     getList() {
       this.loading = true;
-      listMsds(this.queryParams).then(response => {
-        this.msdsList = response.rows;
+      listBzwxy(this.queryParams).then(response => {
+        this.bzwxyList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -197,11 +194,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        msdsId: null,
-        msdsName: null,
+        bzwxyId: null,
+        bzwxyName: null,
         createBy: null,
-        msdsStatus: null,
-        msdsPath: null
+        bzwxyStatus: null,
+        bzwxyPath: null
       };
       this.resetForm("form");
     },
@@ -217,7 +214,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.msdsId)
+      this.ids = selection.map(item => item.bzwxyId)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -225,30 +222,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加MSDS信息";
+      this.title = "添加班组危险源信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const msdsId = row.msdsId || this.ids
-      getMsds(msdsId).then(response => {
+      const bzwxyId = row.bzwxyId || this.ids
+      getBzwxy(bzwxyId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改MSDS信息";
+        this.title = "修改班组危险源信息";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.msdsId != null) {
-            updateMsds(this.form).then(response => {
+          if (this.form.bzwxyId != null) {
+            updateBzwxy(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addMsds(this.form).then(response => {
+            addBzwxy(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -259,9 +256,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const msdsIds = row.msdsId || this.ids;
-      this.$modal.confirm('是否确认删除MSDS信息编号为"' + msdsIds + '"的数据项？').then(function() {
-        return delMsds(msdsIds);
+      const bzwxyIds = row.bzwxyId || this.ids;
+      this.$modal.confirm('是否确认删除班组危险源信息编号为"' + bzwxyIds + '"的数据项？').then(function() {
+        return delBzwxy(bzwxyIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -269,9 +266,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/msds/export', {
+      this.download('system/bzwxy/export', {
         ...this.queryParams
-      }, `msds_${new Date().getTime()}.xlsx`)
+      }, `bzwxy_${new Date().getTime()}.xlsx`)
     }
   }
 };

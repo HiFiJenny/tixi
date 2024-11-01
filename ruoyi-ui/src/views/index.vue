@@ -7,7 +7,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>体系资料管理框架</h2>
+        <h2>体系资料管理系統</h2>
 
         <p>
           <b>当前版本:</b> <span>v{{ version }}</span>
@@ -16,6 +16,66 @@
 
     </el-row>
     <el-divider />
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>功能介绍</span>
+          </div>
+          <div class="body">
+            <p>  
+              <i class="el-icon-s-promotion"></i> 班组安全生产责任书；  
+            </p>  
+            <p>  
+              <i class="el-icon-s-promotion"></i> 班组危险源、隐患清单；  
+            </p>   
+            <p>  
+              <i class="el-icon-s-promotion"></i> 劳防用品申请、领用记录；  
+            </p>  
+            <p>  
+              <i class="el-icon-s-promotion"></i> 危化品MSDS；  
+            </p>  
+            <p>  
+              <i class="el-icon-s-promotion"></i> 应急救援预案、演练记录；  
+            </p>  
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>计量云表单</span>
+          </div>
+          <div class="body">
+            <img
+              src="@/assets/images/pay.png"
+              alt="donate"
+              width="100%"
+            />
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>技术支持</span>
+          </div>
+          <div class="body">
+            <p>
+              
+              <i class="el-icon-user-solid"></i> 账号：工号
+            </p>
+            <p>
+              
+              <i class="el-icon-user-solid"></i> 初始密码：123456
+            </p>  
+            <span style="display: inline-block; height: 30px; line-height: 30px"
+              >首次使用请联系管理员67077开通账号</span
+            >
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -25,7 +85,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.6.3",
+      version: "1.0.0",
     };
   },
   methods: {
@@ -99,4 +159,3 @@ export default {
   }
 }
 </style>
-

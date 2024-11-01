@@ -7,4 +7,3 @@ create table sys_msds (
   msds_path         varchar(255)    default ''        comment '路径',
   primary key (msds_id)
 ) engine=innodb auto_increment=1 comment = 'MSDS信息表';
-

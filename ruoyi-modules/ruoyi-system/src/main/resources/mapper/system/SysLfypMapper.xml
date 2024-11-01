@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysLfypMapper">
+    
+    <resultMap type="SysLfyp" id="SysLfypResult">
+        <result property="lfypId"    column="lfyp_id"    />
+        <result property="lfypName"    column="lfyp_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="lfypStatus"    column="lfyp_status"    />
+        <result property="lfypPath"    column="lfyp_path"    />
+    </resultMap>
+
+    <sql id="selectSysLfypVo">
+        select lfyp_id, lfyp_name, create_by, lfyp_status, lfyp_path from sys_lfyp
+    </sql>
+
+    <select id="selectSysLfypList" parameterType="SysLfyp" resultMap="SysLfypResult">
+        <include refid="selectSysLfypVo"/>
+        <where>  
+            <if test="lfypName != null  and lfypName != ''"> and lfyp_name like concat('%', #{lfypName}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="lfypStatus != null  and lfypStatus != ''"> and lfyp_status = #{lfypStatus}</if>
+            <if test="lfypPath != null  and lfypPath != ''"> and lfyp_path = #{lfypPath}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysLfypByLfypId" parameterType="Long" resultMap="SysLfypResult">
+        <include refid="selectSysLfypVo"/>
+        where lfyp_id = #{lfypId}
+    </select>
+        
+    <insert id="insertSysLfyp" parameterType="SysLfyp" useGeneratedKeys="true" keyProperty="lfypId">
+        insert into sys_lfyp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lfypName != null">lfyp_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="lfypStatus != null">lfyp_status,</if>
+            <if test="lfypPath != null">lfyp_path,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="lfypName != null">#{lfypName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="lfypStatus != null">#{lfypStatus},</if>
+            <if test="lfypPath != null">#{lfypPath},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysLfyp" parameterType="SysLfyp">
+        update sys_lfyp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lfypName != null">lfyp_name = #{lfypName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="lfypStatus != null">lfyp_status = #{lfypStatus},</if>
+            <if test="lfypPath != null">lfyp_path = #{lfypPath},</if>
+        </trim>
+        where lfyp_id = #{lfypId}
+    </update>
+
+    <delete id="deleteSysLfypByLfypId" parameterType="Long">
+        delete from sys_lfyp where lfyp_id = #{lfypId}
+    </delete>
+
+    <delete id="deleteSysLfypByLfypIds" parameterType="String">
+        delete from sys_lfyp where lfyp_id in 
+        <foreach item="lfypId" collection="array" open="(" separator="," close=")">
+            #{lfypId}
+        </foreach>
+    </delete>
+</mapper>

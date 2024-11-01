@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysBzaqMapper">
+    
+    <resultMap type="SysBzaq" id="SysBzaqResult">
+        <result property="bzaqId"    column="bzaq_id"    />
+        <result property="bzaqName"    column="bzaq_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="bzaqStatus"    column="bzaq_status"    />
+        <result property="bzaqPath"    column="bzaq_path"    />
+    </resultMap>
+
+    <sql id="selectSysBzaqVo">
+        select bzaq_id, bzaq_name, create_by, bzaq_status, bzaq_path from sys_bzaq
+    </sql>
+
+    <select id="selectSysBzaqList" parameterType="SysBzaq" resultMap="SysBzaqResult">
+        <include refid="selectSysBzaqVo"/>
+        <where>  
+            <if test="bzaqName != null  and bzaqName != ''"> and bzaq_name like concat('%', #{bzaqName}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="bzaqStatus != null  and bzaqStatus != ''"> and bzaq_status = #{bzaqStatus}</if>
+            <if test="bzaqPath != null  and bzaqPath != ''"> and bzaq_path = #{bzaqPath}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysBzaqByBzaqId" parameterType="Long" resultMap="SysBzaqResult">
+        <include refid="selectSysBzaqVo"/>
+        where bzaq_id = #{bzaqId}
+    </select>
+        
+    <insert id="insertSysBzaq" parameterType="SysBzaq" useGeneratedKeys="true" keyProperty="bzaqId">
+        insert into sys_bzaq
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bzaqName != null">bzaq_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="bzaqStatus != null">bzaq_status,</if>
+            <if test="bzaqPath != null">bzaq_path,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bzaqName != null">#{bzaqName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="bzaqStatus != null">#{bzaqStatus},</if>
+            <if test="bzaqPath != null">#{bzaqPath},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysBzaq" parameterType="SysBzaq">
+        update sys_bzaq
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bzaqName != null">bzaq_name = #{bzaqName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="bzaqStatus != null">bzaq_status = #{bzaqStatus},</if>
+            <if test="bzaqPath != null">bzaq_path = #{bzaqPath},</if>
+        </trim>
+        where bzaq_id = #{bzaqId}
+    </update>
+
+    <delete id="deleteSysBzaqByBzaqId" parameterType="Long">
+        delete from sys_bzaq where bzaq_id = #{bzaqId}
+    </delete>
+
+    <delete id="deleteSysBzaqByBzaqIds" parameterType="String">
+        delete from sys_bzaq where bzaq_id in 
+        <foreach item="bzaqId" collection="array" open="(" separator="," close=")">
+            #{bzaqId}
+        </foreach>
+    </delete>
+</mapper>
